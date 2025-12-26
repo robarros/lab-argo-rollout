@@ -1,0 +1,41 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: argocd-gateway
+  namespace: argocd
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http-argocd
+      protocol: HTTP
+    hosts:
+    - "argocd.virtualti.net"
+  - port:
+      number: 443
+      name: https-argocd
+      protocol: HTTP
+    hosts:
+    - "argocd.virtualti.net"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: argocd-virtualservice
+  namespace: argocd
+spec:
+  hosts:
+  - "argocd.virtualti.net"
+  gateways:
+  - argocd-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: argocd-server
+        port:
+          number: 80
