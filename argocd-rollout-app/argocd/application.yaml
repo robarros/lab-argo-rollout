@@ -23,7 +23,7 @@ spec:
   syncPolicy:
     automated:
       prune: true      # Remove recursos que não estão mais no Git
-      selfHeal: true   # Corrige drift automaticamente
+      selfHeal: false   # Corrige drift automaticamente
       allowEmpty: false
     syncOptions:
       - CreateNamespace=true  # Cria o namespace se não existir
@@ -41,6 +41,4 @@ spec:
       kind: Rollout
       jsonPointers:
         - /spec/replicas
-      managedFieldsManagers:
-        - kubectl
-        - kubectl-scale
+
