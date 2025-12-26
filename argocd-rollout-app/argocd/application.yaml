@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: meu-app
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  
+  # Source: onde estão os manifestos
+  source:
+    repoURL: https://github.com/SEU-USUARIO/SEU-REPO.git  # ALTERE AQUI
+    targetRevision: main  # ou master, ou a branch desejada
+    path: argocd-rollout-app/base  # caminho para os manifestos base
+    
+  # Destination: onde será aplicado
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app
+  
+  # Sync Policy: como o ArgoCD deve sincronizar
+  syncPolicy:
+    automated:
+      prune: true      # Remove recursos que não estão mais no Git
+      selfHeal: true   # Corrige drift automaticamente
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true  # Cria o namespace se não existir
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+        
+# ignoreDifferences para ignorar mudanças gerenciadas pelo Argo Rollouts
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas

@@ -1,0 +1,55 @@
+# serviceentry.yaml
+---
+# 1. ServiceEntry: registra a API externa no Istio
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: external-api
+  namespace: app
+spec:
+  hosts:
+  - api.example.com              # API que seu container chama
+  ports:
+  - number: 443
+    name: https
+    protocol: HTTPS
+  location: MESH_EXTERNAL        # Indica que é externo
+  resolution: DNS                # Resolve via DNS
+---
+# 2. DestinationRule: aplica circuit breaker
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: external-api-dr
+  namespace: app
+spec:
+  host: api.example.com
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 50
+      http:
+        http1MaxPendingRequests: 25
+    outlierDetection:              # Circuit Breaker
+      consecutiveErrors: 3         # Após 3 erros consecutivos
+      interval: 30s                # Verifica a cada 30s
+      baseEjectionTime: 60s        # Bloqueia por 60s
+---
+# 3. VirtualService: aplica retry e timeout
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: external-api-vs
+  namespace: app
+spec:
+  hosts:
+  - api.example.com
+  http:
+  - retries:
+      attempts: 3                  # 3 tentativas
+      perTryTimeout: 5s            # 5s por tentativa
+      retryOn: 5xx,reset,connect-failure
+    timeout: 20s                   # Timeout total
+    route:
+    - destination:
+        host: api.example.com

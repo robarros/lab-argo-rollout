@@ -1,0 +1,51 @@
+# rollout.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: meu-app-rollout
+  namespace: app
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: meu-app
+  template:
+    metadata:
+      labels:
+        app: meu-app
+    spec:
+      containers:
+      - name: rollout-gateway
+        image: lmacademy/simple-color-app:1.0.0
+        env:
+          - name: APP_COLOR
+            value: purple
+          - name: ERROR_RATE
+            value: '0.1'
+        ports:
+        - containerPort: 3000
+  strategy:
+    canary:
+      canaryService: app-canary
+      stableService: app-stable
+      trafficRouting:
+        istio:
+          virtualService:
+            name: app-vs
+            routes:
+            - primary-route
+          # destinationRule:
+          #   name: app-dr
+          #   canarySubsetName: canary
+          #   stableSubsetName: stable
+      steps:
+      - setWeight: 20
+      - pause: {}
+      - setWeight: 40
+      - pause: {}
+      - setWeight: 60
+      - pause: {}
+      - setWeight: 80
+      - pause: {}
+      # - setWeight: 80
+      # - pause: {duration: 30s}

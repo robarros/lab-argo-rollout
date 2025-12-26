@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: rollout-project
+  namespace: argocd
+spec:
+  description: Projeto para aplicações com Argo Rollouts
+  
+  # Source repositories que podem ser usados
+  sourceRepos:
+    - '*'  # Permite todos os repositórios (ou especifique o seu)
+  
+  # Destinations onde pode deployar
+  destinations:
+    - namespace: 'app'
+      server: https://kubernetes.default.svc
+    - namespace: 'istio-system'
+      server: https://kubernetes.default.svc
+  
+  # Recursos que podem ser gerenciados
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'

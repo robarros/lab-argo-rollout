@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: app-dr
+  namespace: app
+spec:
+  host: app-stable
+  subsets:
+  - name: stable
+    labels:
+      rollouts-pod-template-hash: stable
+  - name: canary
+    labels:
+      rollouts-pod-template-hash: canary

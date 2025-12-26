@@ -1,0 +1,16 @@
+# gateway-global.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: my-gateway
+  namespace: istio-system # Geralmente onde o Istio Ingress está instalado
+spec:
+  selector:
+    istio: ingressgateway # Isso faz o Gateway se conectar ao Pod do Istio Ingress
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*" # Permite qualquer host, ou coloque seu domínio (ex: meuapp.com)

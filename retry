@@ -1,0 +1,74 @@
+# virtualservice.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: app-vs
+  namespace: app # Namespace da sua aplicação
+spec:
+  hosts:
+  - "*" # Ou o DNS configurado no seu ALB
+  gateways:
+  - istio-system/my-gateway # REFERÊNCIA AO GATEWAY CRIADO ACIMA
+  #- mesh                         # IMPORTANTE: mantém o Canary funcionando internamente
+  http:
+  - name: primary-route
+    retries:
+      attempts: 3
+      perTryTimeout: 2s
+      retryOn: 5xx,reset,connect-failure,refused-stream
+    timeout: 10s
+    route:
+    - destination:
+        host: app-stable
+      weight: 100
+    - destination:
+        host: app-canary
+      weight: 0
+
+
+---
+# DestinationRule para app-stable com circuit breaker e retry
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: app-stable-dr
+  namespace: app
+spec:
+  host: app-stable
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 50
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 2
+    outlierDetection:
+      consecutiveErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+      minHealthPercent: 40
+---
+# DestinationRule para app-canary com circuit breaker e retry
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: app-canary-dr
+  namespace: app
+spec:
+  host: app-canary
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 50
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 2
+    outlierDetection:
+      consecutiveErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+      minHealthPercent: 40
