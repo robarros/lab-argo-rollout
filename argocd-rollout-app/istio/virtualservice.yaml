@@ -37,7 +37,11 @@ spec:
     route:
     - destination:
         host: app-stable
+        port:
+          number: 80
       weight: 100
     - destination:
         host: app-canary
+        port:
+          number: 80
       weight: 0
