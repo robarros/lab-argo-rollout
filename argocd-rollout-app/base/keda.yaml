@@ -8,8 +8,10 @@ spec:
     apiVersion: argoproj.io/v1alpha1
     kind: Rollout
     name: meu-app-rollout
+
+  cooldownPeriod: 60 # segundos
   
-  minReplicaCount: 10
+  minReplicaCount: 2
   maxReplicaCount: 20
 
   triggers:
