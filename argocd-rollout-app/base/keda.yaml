@@ -9,10 +9,35 @@ spec:
     kind: Rollout
     name: meu-app-rollout
 
-  cooldownPeriod: 60 # segundos
+  cooldownPeriod: 180  # 3 minutos antes de escalar para baixo
+  pollingInterval: 30  # Verifica métricas a cada 30 segundos
   
   minReplicaCount: 2
   maxReplicaCount: 20
+
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 300  # Observa por 5 minutos antes de reduzir
+          policies:
+          - type: Percent
+            value: 25  # Remove máximo 25% dos pods por vez
+            periodSeconds: 60
+          - type: Pods
+            value: 2  # Ou máximo 2 pods por vez
+            periodSeconds: 60
+          selectPolicy: Min  # Escolhe a política mais conservadora
+        scaleUp:
+          stabilizationWindowSeconds: 0  # Escala para cima imediatamente
+          policies:
+          - type: Percent
+            value: 50  # Adiciona até 50% dos pods
+            periodSeconds: 60
+          - type: Pods
+            value: 3  # Ou máximo 3 pods por vez
+            periodSeconds: 60
+          selectPolicy: Max  # Escolhe a política mais agressiva
 
   triggers:
     - type: cpu
