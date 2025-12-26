@@ -8,13 +8,12 @@ spec:
     apiVersion: argoproj.io/v1alpha1
     kind: Rollout
     name: meu-app-rollout
-    namespace: app
-
+  
   minReplicaCount: 10
   maxReplicaCount: 20
 
   triggers:
     - type: cpu
+      metricType: Utilization
       metadata:
-        type: Utilization
         value: "70"
