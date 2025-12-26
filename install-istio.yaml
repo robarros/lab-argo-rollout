@@ -1,0 +1,30 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  namespace: istio-system
+  name: istio
+spec:
+  profile: default
+  components:
+    ingressGateways:
+      - name: istio-ingressgateway
+        enabled: true
+        k8s:
+          service:
+            type: LoadBalancer # Aqui o K8s solicita o LB para a AWS
+          serviceAnnotations:
+            # Ativa o NLB (via AWS Load Balancer Controller)
+            service.beta.kubernetes.io/aws-load-balancer-type: "external"
+            service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+            service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+            service.beta.kubernetes.io/aws-load-balancer-name: "istio"
+            # Opcional: Se quiser usar SSL/TLS direto no NLB com certificado do ACM
+            # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:region:account:cert-id
+            # service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+            service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-east-1:XXXXXXXXX:certificate/XXXXXXXXXXXX"
+            service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http" 
+            service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+
+
+
+# istioctl install -f install-istio.yaml 

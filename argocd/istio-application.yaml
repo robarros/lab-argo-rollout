@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/robarros/lab-argo-rollout.git
     targetRevision: main
-    path: argocd-rollout-app/istio
+    path: istio
     
   destination:
     server: https://kubernetes.default.svc

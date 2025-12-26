@@ -12,7 +12,7 @@ spec:
   source:
     repoURL:  https://github.com/robarros/lab-argo-rollout.git # ALTERE AQUI
     targetRevision: main  # ou master, ou a branch desejada
-    path: argocd-rollout-app/base  # caminho para os manifestos base
+    path: base  # caminho para os manifestos base
     
   # Destination: onde será aplicado
   destination:
