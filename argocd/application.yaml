@@ -23,11 +23,11 @@ spec:
   syncPolicy:
     automated:
       prune: true      # Remove recursos que não estão mais no Git
-      selfHeal: false   # Corrige drift automaticamente
+      selfHeal: true   # Corrige drift automaticamente
       allowEmpty: false
     syncOptions:
       - CreateNamespace=true  # Cria o namespace se não existir
-      - RespectIgnoreDifferences=true  # Respeita ignoreDifferences durante selfHeal
+      # - RespectIgnoreDifferences=true  # Respeita ignoreDifferences durante selfHeal
     retry:
       limit: 5
       backoff:
@@ -36,9 +36,9 @@ spec:
         maxDuration: 3m
         
 # ignoreDifferences para ignorar mudanças gerenciadas pelo Argo Rollouts
-  ignoreDifferences:
-    - group: argoproj.io
-      kind: Rollout
-      jsonPointers:
-        - /spec/replicas
+  # ignoreDifferences:
+  #   - group: argoproj.io
+  #     kind: Rollout
+  #     jsonPointers:
+  #       - /spec/replicas
 
