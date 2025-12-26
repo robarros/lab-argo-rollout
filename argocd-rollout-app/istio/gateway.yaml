@@ -9,13 +9,13 @@ spec:
   servers:
   - port:
       number: 80
-      name: http-argocd
+      name: http-app
       protocol: HTTP
     hosts:
     - "app.virtualti.net"
   - port:
       number: 443
-      name: https-argocd
+      name: https-app
       protocol: HTTP
     hosts:
     - "app.virtualti.net"
