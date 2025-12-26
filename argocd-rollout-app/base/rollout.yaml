@@ -4,7 +4,7 @@ metadata:
   name: meu-app-rollout
   namespace: app
 spec:
-  replicas: 10
+  #replicas: 10
   selector:
     matchLabels:
       app: meu-app
