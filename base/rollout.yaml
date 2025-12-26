@@ -14,11 +14,11 @@ spec:
         app: meu-app
     spec:
       containers:
-      - name: rollout-gateway
-        image: lmacademy/simple-color-app:1.0.0
+      - name: simple-color-app
+        image: robarros/simple-color-app:1.0.0
         env:
           - name: APP_COLOR
-            value: yellow
+            value: green
           - name: ERROR_RATE
             value: '0'
         ports:
