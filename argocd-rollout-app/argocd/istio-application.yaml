@@ -9,7 +9,7 @@ spec:
   project: default
   
   source:
-    repoURL: https://github.com/SEU-USUARIO/SEU-REPO.git  # ALTERE AQUI
+    repoURL: https://github.com/robarros/lab-argo-rollout.git
     targetRevision: main
     path: argocd-rollout-app/istio
     

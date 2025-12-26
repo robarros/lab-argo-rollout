@@ -10,7 +10,7 @@ spec:
   
   # Source: onde estão os manifestos
   source:
-    repoURL: https://github.com/SEU-USUARIO/SEU-REPO.git  # ALTERE AQUI
+    repoURL:  https://github.com/robarros/lab-argo-rollout.git # ALTERE AQUI
     targetRevision: main  # ou master, ou a branch desejada
     path: argocd-rollout-app/base  # caminho para os manifestos base
     
