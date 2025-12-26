@@ -18,9 +18,9 @@ spec:
         image: lmacademy/simple-color-app:1.0.0
         env:
           - name: APP_COLOR
-            value: purple
+            value: orange
           - name: ERROR_RATE
-            value: '0.1'
+            value: '0'
         ports:
         - containerPort: 3000
   strategy:
