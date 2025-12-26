@@ -25,11 +25,11 @@ spec:
         - containerPort: 3000
         resources:
           requests:
-            cpu: 100m
-            memory: 64Mi
+            cpu: 10m
+            memory: 16Mi
           limits:
-            cpu: 200m
-            memory: 128Mi
+            cpu: 50m
+            memory: 32Mi
   strategy:
     canary:
       canaryService: app-canary
