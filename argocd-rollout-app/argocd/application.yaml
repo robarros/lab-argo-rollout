@@ -36,7 +36,7 @@ spec:
         
 # ignoreDifferences para ignorar mudanças gerenciadas pelo Argo Rollouts
   ignoreDifferences:
-    - group: apps
-      kind: Deployment
+    - group: argoproj.io
+      kind: Rollout
       jsonPointers:
         - /spec/replicas
