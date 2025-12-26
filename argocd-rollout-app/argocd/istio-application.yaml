@@ -29,3 +29,10 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
+
+# ignoreDifferences para ignorar mudanças gerenciadas pelo Argo Rollouts
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
