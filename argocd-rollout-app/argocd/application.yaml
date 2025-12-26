@@ -27,6 +27,7 @@ spec:
       allowEmpty: false
     syncOptions:
       - CreateNamespace=true  # Cria o namespace se não existir
+      - RespectIgnoreDifferences=true  # Respeita ignoreDifferences durante selfHeal
     retry:
       limit: 5
       backoff:
