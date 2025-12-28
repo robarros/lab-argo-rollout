@@ -1,3 +1,4 @@
+---
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 metadata:
@@ -17,14 +18,16 @@ spec:
             service.beta.kubernetes.io/aws-load-balancer-type: "external"
             service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
             service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
-            service.beta.kubernetes.io/aws-load-balancer-name: "istio"
+            service.beta.kubernetes.io/aws-load-balancer-name: "istio-nlb"
             # Opcional: Se quiser usar SSL/TLS direto no NLB com certificado do ACM
             # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:region:account:cert-id
             # service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
-            service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-east-1:XXXXXXXXX:certificate/XXXXXXXXXXXX"
+            service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-east-1:297997106843:certificate/51da48c3-cad9-459a-aeed-6237eefa7aa9"
             service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http" 
             service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
 
 
 
-# istioctl install -f install-istio.yaml 
+# istioctl install -f install-istio-nlb.yaml 
+
+# istioctl uninstall -f install-istio-nlb.yaml

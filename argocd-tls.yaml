@@ -1,3 +1,4 @@
+---
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
@@ -19,6 +20,7 @@ spec:
       protocol: HTTP
     hosts:
     - "argocd.virtualti.net"
+
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -39,3 +41,5 @@ spec:
         host: argocd-server
         port:
           number: 80
+
+# kubectl apply -f argocd-tls.yaml

@@ -1,0 +1,147 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: lab-eks
+  region: us-east-1
+  version: "1.34"
+  tags:
+    karpenter.sh/discovery: lab-eks
+
+availabilityZones: ["us-east-1a", "us-east-1b"]
+
+vpc:
+  clusterEndpoints:
+    publicAccess: true
+    privateAccess: true
+  nat:
+    gateway: Single # other options: Disable, Single (default)
+
+accessConfig:
+  authenticationMode: API
+
+# IAM Identity Mappings - Allow Karpenter nodes to join
+iamIdentityMappings:
+  - arn: arn:aws:iam::297997106843:role/KarpenterNodeRole
+    username: system:node:{{EC2PrivateDNSName}}
+    groups:
+      - system:bootstrappers
+      - system:nodes
+
+iam:
+  withOIDC: true
+  serviceAccounts:
+    # Service Account for Karpenter Controller
+    - metadata:
+        name: karpenter
+        namespace: kube-system
+      roleName: KarpenterController
+      attachPolicy:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - ec2:CreateFleet
+              - ec2:CreateLaunchTemplate
+              - ec2:CreateTags
+              - ec2:DescribeAvailabilityZones
+              - ec2:DescribeImages
+              - ec2:DescribeInstances
+              - ec2:DescribeInstanceTypeOfferings
+              - ec2:DescribeInstanceTypes
+              - ec2:DescribeLaunchTemplates
+              - ec2:DescribeSecurityGroups
+              - ec2:DescribeSpotPriceHistory
+              - ec2:DescribeSubnets
+              - pricing:GetProducts
+              - ec2:DeleteLaunchTemplate
+              - ec2:RunInstances
+              - ec2:TerminateInstances
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - ssm:GetParameter
+            Resource: "arn:aws:ssm:*:*:parameter/aws/service/*"
+          - Effect: Allow
+            Action:
+              - iam:PassRole
+            Resource: "arn:aws:iam::*:role/KarpenterNodeRole"
+          - Effect: Allow
+            Action:
+              - sqs:CreateQueue
+              - sqs:DeleteQueue
+              - sqs:GetQueueAttributes
+              - sqs:GetQueueUrl
+              - sqs:ReceiveMessage
+              - sqs:DeleteMessage
+              - sqs:TagQueue
+            Resource: "*"
+
+    # Service Account for AWS Load Balancer Controller
+    - metadata:
+        name: aws-load-balancer-controller
+        namespace: kube-system
+      wellKnownPolicies:
+        awsLoadBalancerController: true
+
+    # Service Account for External Secrets Operator
+    - metadata:
+        name: external-secrets
+        namespace: external-secrets-system
+      wellKnownPolicies:
+        externalDNS: false
+        certManager: false
+      attachPolicyARNs:
+        - arn:aws:iam::aws:policy/SecretsManagerReadWrite
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
+
+
+managedNodeGroups:
+- instanceTypes: ["m7i-flex.large", "c7i-flex.large"] # "t3.micro", "t3.small"
+  amiFamily: Bottlerocket #AmazonLinux2023 # AmazonLinux2 # Bottlerocket
+  name: ng-spots
+  privateNetworking: true
+  volumeSize: 50
+  volumeType: gp3
+  desiredCapacity: 2
+  minSize: 2
+  maxSize: 10
+  volumeEncrypted: true
+  spot: true
+  iam:
+    withAddonPolicies:
+      imageBuilder: true
+      externalDNS: false
+      certManager: false
+      appMesh: false
+      ebs: true
+      fsx: false
+      efs: false
+      albIngress: true
+      cloudWatch: true
+  availabilityZones:
+    - us-east-1a
+    - us-east-1b
+  tags:
+      karpenter.sh/discovery: lab-eks
+
+addons:
+- name: coredns
+  version: latest 
+- name: kube-proxy
+  version: latest
+- name: eks-pod-identity-agent
+  version: latest
+- name: vpc-cni 
+  attachPolicyARNs:
+    - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+  version: latest
+- name: aws-ebs-csi-driver
+  version: latest
+  wellKnownPolicies:
+    ebsCSIController: true
+
+
+# eksctl create cluster -f cluster.yaml
+
+# eksctl delete cluster -f cluster.yaml
