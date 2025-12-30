@@ -1,0 +1,39 @@
+provider: cloudflare
+policy: sync
+logLevel: debug
+domainFilters:
+  - virtualti.net
+sources:
+  - istio-gateway
+  - istio-virtualservice
+
+# Istio ingress gateway services to use for DNS targets
+istioIngressGatewayServices:
+  - istio-system/istio-ingressgateway
+
+extraArgs:
+  # Optional: adjust TXT registry owner ID if sharing zones
+  txt-owner-id: external-dns-istio
+
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-api-key
+        key: apiKey
+
+
+##################################################
+
+# helm repo add external-dns https://kubernetes-sigs.github.io/external-dns
+
+# helm repo update
+
+
+# kubectl -n external-dns create secret generic cloudflare-api-key \
+#   --from-literal=apiKey='XXXXXXXXXXXXXXXXXXXXX'
+
+# helm upgrade --install external-dns external-dns/external-dns \
+#   --namespace external-dns \
+#   --create-namespace \
+#   -f external-dns-values.yaml

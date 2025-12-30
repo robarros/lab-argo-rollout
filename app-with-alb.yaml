@@ -4,23 +4,23 @@ kind: Namespace
 metadata:
   name: app
   labels:
-    #istio-injection: enabled
-    istio.io/dataplane-mode: ambient
+    istio-injection: enabled
+    #istio.io/dataplane-mode: ambient
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
+  name: app-demo
   namespace: app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nginx
+      app: app-demo
   template:
     metadata:
       labels:
-        app: nginx
+        app: app-demo
     spec:
       containers:
       - name: simple-color-app
@@ -34,11 +34,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx
+  name: app-demo
   namespace: app
 spec:
   selector:
-    app: nginx
+    app: app-demo
   ports:
     - name: http
       port: 80
@@ -59,16 +59,22 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - nginx.virtualti.net
+        - app-demo.virtualti.net
+    - port:
+        number: 443
+        name: https
+        protocol: HTTP
+      hosts:
+        - app-demo.virtualti.net
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: nginx
+  name: app-demo
   namespace: app
 spec:
   hosts:
-    - nginx.virtualti.net
+    - app-demo.virtualti.net
   gateways:
     - app-gateway
   http:
@@ -77,6 +83,6 @@ spec:
             prefix: /
       route:
         - destination:
-            host: nginx.app.svc.cluster.local
+            host: app-demo.app.svc.cluster.local
             port:
               number: 80
