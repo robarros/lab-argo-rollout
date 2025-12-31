@@ -23,6 +23,8 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - RespectIgnoreDifferences=true
     retry:
       limit: 5
       backoff:
@@ -32,7 +34,11 @@ spec:
 
 # ignoreDifferences para ignorar mudanças gerenciadas pelo Argo Rollouts
   ignoreDifferences:
-    - group: apps
-      kind: Deployment
-      jsonPointers:
-        - /spec/replicas
+    # - group: apps
+    #   kind: Deployment
+    #   jsonPointers:
+    #     - /spec/replicas
+    - group: networking.istio.io
+      kind: VirtualService
+      jqPathExpressions:
+      - .spec.http[].route[].weight
