@@ -29,6 +29,13 @@ spec:
   - "app.virtualti.net"
   gateways:
   - istio-system/my-gateway
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN # Algoritmo de balanceamento de carga
+      warmup: 
+        minimumPercent: 3.0 # Percentual mínimo de tráfego durante o warmup
+        duration: 3m      # Duração do período de warmup
+        aggression: 1.0   # Agilidade do ajuste do tráfego
   http:
   - name: primary-route
     match:
