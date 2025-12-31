@@ -13,7 +13,7 @@ spec:
   cooldownPeriod: 180  # 3 minutos antes de escalar para baixo
   pollingInterval: 30  # Verifica métricas a cada 30 segundos
   
-  minReplicaCount: 2
+  minReplicaCount: 10
   maxReplicaCount: 20
 
   advanced:
