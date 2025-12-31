@@ -1,0 +1,90 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app-vendas
+  labels:
+    istio-injection: enabled
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-vendas
+  namespace: app-vendas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-vendas
+  template:
+    metadata:
+      labels:
+        app: app-vendas
+    spec:
+      containers:
+        - name: app-vendas
+          image: hashicorp/http-echo
+          args:
+            - "-text=ISTIO-VENDAS"
+          ports:
+            - containerPort: 5678
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-vendas
+  namespace: app-vendas
+spec:
+  selector:
+    app: app-vendas
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5678
+  type: ClusterIP
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: api-vendas-gw
+  namespace: app-vendas
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "api.virtualti.net"
+  - port:
+      number: 443
+      name: https
+      protocol: HTTP
+    hosts:
+    - "api.virtualti.net"
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: app-vendas-vs
+  namespace: app-vendas
+spec:
+  hosts:
+    - "api.virtualti.net" # <-- Garante que o roteamento só ocorra para este domínio
+  gateways:
+    - api-vendas-gw
+  http:
+    - match:
+        - uri:
+            prefix: /vendas
+      rewrite:
+        uri: /  # Isso faz com que o microserviço receba a requisição no "/"
+      route:
+        - destination:
+            host: app-vendas
+            port:
+              number: 80

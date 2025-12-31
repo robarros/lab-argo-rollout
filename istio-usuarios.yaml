@@ -1,0 +1,92 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app-usuarios
+  labels:
+    istio-injection: enabled
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-usuarios
+  namespace: app-usuarios
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-usuarios
+  template:
+    metadata:
+      labels:
+        app: app-usuarios
+    spec:
+      containers:
+        - name: app-usuarios
+          image: hashicorp/http-echo
+          args:
+            - "-text=ISTIO-USUARIOS"
+          ports:
+            - containerPort: 5678
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-usuarios
+  namespace: app-usuarios
+spec:
+  selector:
+    app: app-usuarios
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5678
+  type: ClusterIP
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: api-usuarios-gw
+  namespace: app-usuarios
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "api.virtualti.net"
+  - port:
+      number: 443
+      name: https
+      protocol: HTTP
+    hosts:
+    - "api.virtualti.net"
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: app-usuarios-vs
+  namespace: app-usuarios
+spec:
+  hosts:
+    - "api.virtualti.net" # <-- Garante que o roteamento só ocorra para este domínio
+  gateways:
+    - api-usuarios-gw
+  http:
+    - match:
+        - uri:
+            prefix: /usuarios
+      rewrite:
+        uri: /  # Isso faz com que o microserviço receba a requisição no "/"
+      route:
+        - destination:
+            host: app-usuarios
+            port:
+              number: 80
+
+
