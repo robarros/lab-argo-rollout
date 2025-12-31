@@ -10,7 +10,7 @@ spec:
   project: default
 
   # Setando um limite de histórico de revisões para evitar acúmulo
-  revisionHistoryLimit: 2
+  revisionHistoryLimit: 3
   
   # Source: onde estão os manifestos
   source:
