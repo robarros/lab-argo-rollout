@@ -6,7 +6,11 @@ metadata:
   # finalizers:
   #   - resources-finalizer.argocd.argoproj.io
 spec:
+  # Definindo o projeto ArgoCD
   project: default
+
+  # Setando um limite de histórico de revisões para evitar acúmulo
+  revisionHistoryLimit: 2
   
   # Source: onde estão os manifestos
   source:
