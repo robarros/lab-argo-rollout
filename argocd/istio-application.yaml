@@ -7,6 +7,8 @@ metadata:
   #   - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
+
+  revisionHistoryLimit: 3
   
   source:
     repoURL: https://github.com/robarros/lab-argo-rollout.git
