@@ -4,6 +4,9 @@ kind: Rollout
 metadata:
   name: meu-app-rollout
   namespace: app
+  tags.datadoghq.com/env: "dev"
+  tags.datadoghq.com/service: "meu-app"
+  tags.datadoghq.com/version: "1.0.0"
 spec:
   #replicas: 10
   selector:
@@ -13,6 +16,14 @@ spec:
     metadata:
       labels:
         app: meu-app
+        tags.datadoghq.com/env: "dev"
+        tags.datadoghq.com/service: "meu-app"
+        tags.datadoghq.com/version: "1.0.0"
+        admission.datadoghq.com/enabled: "true"
+      # annotations:
+      #   admission.datadoghq.com/enabled: "true"
+      #   admission.datadoghq.com/config.mode: "socket"
+      #   admission.datadoghq.com/inject-traces: "true"
     spec:
       containers:
       - name: simple-color-app
@@ -22,6 +33,18 @@ spec:
             value: red
           - name: ERROR_RATE
             value: '0'
+          - name: DD_ENV
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.labels['tags.datadoghq.com/env']
+          - name: DD_SERVICE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.labels['tags.datadoghq.com/service']
+          - name: DD_VERSION 
+            valueFrom: 
+              fieldRef: 
+                fieldPath: metadata.labels['tags.datadoghq.com/version']
         ports:
         - containerPort: 3000
         resources:
