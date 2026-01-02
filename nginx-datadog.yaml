@@ -88,10 +88,9 @@ spec:
 
 # fortio load -c 50 -t 10m -qps 50 http://k8s-default-nginx-7a9d1cd726-3d9f7dad04599f8c.elb.us-east-1.amazonaws.com/
 
-
 # hey -q 50 -c 10 -z 10m  http://k8s-default-nginx-7a9d1cd726-3d9f7dad04599f8c.elb.us-east-1.amazonaws.com/
 
-echo "GET http://k8s-default-nginx-7a9d1cd726-3d9f7dad04599f8c.elb.us-east-1.amazonaws.com" | vegeta attack -rate=50 -duration=5m | vegeta report
+# echo "GET http://k8s-default-nginx-7a9d1cd726-3d9f7dad04599f8c.elb.us-east-1.amazonaws.com" | vegeta attack -rate=50 -duration=5m | vegeta report
 
 
 
