@@ -41,11 +41,11 @@ spec:
         maxDuration: 3m
         
 # ignoreDifferences para ignorar mudanças gerenciadas pelo Argo Rollouts
-  # ignoreDifferences:
-  #   - group: argoproj.io
-  #     kind: Rollout
-  #     jsonPointers:
-  #       - /spec/replicas
+  ignoreDifferences:
+    - group: argoproj.io
+      kind: Rollout
+      jsonPointers:
+        - /spec/replicas
   # ignoreDifferences:
   # - group: networking.istio.io
   #   kind: VirtualService
