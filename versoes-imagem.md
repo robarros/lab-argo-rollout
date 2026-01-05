@@ -1,7 +1,7 @@
 # Versões disponíveis da imagem argoproj/rollouts-demo
 
 ## Cores principais (para teste de rollout visual)
-- `blue` (azul - atualmente em uso)
+- `blue` (azul)
 - `green` (verde)
 - `yellow` (amarelo)
 - `orange` (laranja)

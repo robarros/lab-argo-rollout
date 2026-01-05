@@ -30,7 +30,7 @@ spec:
         image: robarros/simple-color-app:1.0.0
         env:
           - name: APP_COLOR
-            value: green
+            value: yellow
           - name: ERROR_RATE
             value: '0'
           - name: DD_ENV
