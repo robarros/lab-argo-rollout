@@ -40,13 +40,13 @@ spec:
               ruby: "2"
     otelCollector:
       enabled: false
-      ports:
-        - containerPort: 4317
-          hostPort: 4317
-          name: "otel-grpc"
-        - containerPort: 4318
-          hostPort: 4318
-          name: "otel-http"
+      # ports:
+      #   - containerPort: 4317
+      #     hostPort: 4317
+      #     name: "otel-grpc"
+      #   - containerPort: 4318
+      #     hostPort: 4318
+      #     name: "otel-http"
     usm:
       enabled: true
   override:
@@ -54,7 +54,6 @@ spec:
       extraConfd:
         configDataMap:
           http_check.yaml: |-
-            cluster_check: true
             init_config:
             instances:
               - name: "API VirtualTI - SSL Check"
@@ -64,6 +63,16 @@ spec:
                 days_warning: 15
                 timeout: 10
                 tls_verify: true
+          keda.yaml: |-
+            ad_identifiers:
+              - keda-operator
+              - keda-metrics-apiserver
+            init_config:
+            instances:
+              - openmetrics_endpoint: http://%%host%%:8080/metrics
+                namespace: keda
+                metrics:
+                  - keda_*
 
 
 # kubectl apply -f datadog-agent.yaml

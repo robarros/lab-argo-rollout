@@ -30,7 +30,7 @@ spec:
         image: robarros/simple-color-app:1.0.0
         env:
           - name: APP_COLOR
-            value: red
+            value: purple
           - name: ERROR_RATE
             value: '0'
           - name: DD_ENV
@@ -53,7 +53,7 @@ spec:
             memory: 32Mi
           limits:
             cpu: 50m
-            memory: 64Mi
+            memory: 100Mi
   strategy:
     canary:
       canaryService: app-canary
