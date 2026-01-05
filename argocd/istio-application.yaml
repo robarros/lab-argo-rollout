@@ -40,7 +40,14 @@ spec:
     #   kind: Deployment
     #   jsonPointers:
     #     - /spec/replicas
-    - group: networking.istio.io
-      kind: VirtualService
-      jqPathExpressions:
+    # - group: networking.istio.io
+    #   kind: VirtualService
+    #   jqPathExpressions:
+    #   - .spec.http[].route[].weight
+  ignoreDifferences:
+  - group: networking.istio.io
+    kind: VirtualService
+    jqPathExpressions:
       - .spec.http[].route[].weight
+      - .status
+      - .spec.hosts

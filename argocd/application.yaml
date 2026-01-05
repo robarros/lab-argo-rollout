@@ -30,8 +30,9 @@ spec:
       selfHeal: true   # Corrige drift automaticamente
       allowEmpty: false
     syncOptions:
-      - CreateNamespace=true  # Cria o namespace se não existir
-      # - RespectIgnoreDifferences=true  # Respeita ignoreDifferences durante selfHeal
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - RespectIgnoreDifferences=true
     retry:
       limit: 5
       backoff:
@@ -45,4 +46,11 @@ spec:
   #     kind: Rollout
   #     jsonPointers:
   #       - /spec/replicas
+  # ignoreDifferences:
+  # - group: networking.istio.io
+  #   kind: VirtualService
+  #   jqPathExpressions:
+  #     - .spec.http[].route[].weight
+  #     - .status
+  #     - .spec.hosts
 
