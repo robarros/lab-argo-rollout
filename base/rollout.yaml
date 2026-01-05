@@ -16,21 +16,21 @@ spec:
     metadata:
       labels:
         app: meu-app
-        # tags.datadoghq.com/env: "dev"
-        # tags.datadoghq.com/service: "meu-app"
-        # tags.datadoghq.com/version: "1.1.0"
-        # admission.datadoghq.com/enabled: "true"
-      # annotations:
-      #   admission.datadoghq.com/enabled: "true"
-      #   admission.datadoghq.com/config.mode: "socket"
-      #   admission.datadoghq.com/inject-traces: "true"
+        tags.datadoghq.com/env: "dev"
+        tags.datadoghq.com/service: "meu-app"
+        tags.datadoghq.com/version: "1.1.0"
+        admission.datadoghq.com/enabled: "true"
+      annotations:
+        admission.datadoghq.com/enabled: "true"
+        admission.datadoghq.com/config.mode: "socket"
+        admission.datadoghq.com/inject-traces: "true"
     spec:
       containers:
       - name: simple-color-app
         image: robarros/simple-color-app:1.0.0
         env:
           - name: APP_COLOR
-            value: red
+            value: blue
           - name: ERROR_RATE
             value: '0'
           - name: DD_ENV
