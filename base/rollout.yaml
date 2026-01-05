@@ -16,10 +16,10 @@ spec:
     metadata:
       labels:
         app: meu-app
-        tags.datadoghq.com/env: "dev"
-        tags.datadoghq.com/service: "meu-app"
-        tags.datadoghq.com/version: "1.4.0"
-        admission.datadoghq.com/enabled: "true"
+        # tags.datadoghq.com/env: "dev"
+        # tags.datadoghq.com/service: "meu-app"
+        # tags.datadoghq.com/version: "1.4.0"
+        # admission.datadoghq.com/enabled: "true"
       annotations:
         admission.datadoghq.com/enabled: "true"
         admission.datadoghq.com/config.mode: "socket"
@@ -30,7 +30,7 @@ spec:
         image: robarros/simple-color-app:1.0.0
         env:
           - name: APP_COLOR
-            value: green
+            value: purple
           - name: ERROR_RATE
             value: '0'
           - name: DD_ENV
