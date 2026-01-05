@@ -4,9 +4,9 @@ kind: Rollout
 metadata:
   name: meu-app-rollout
   namespace: app
-  tags.datadoghq.com/env: "dev"
-  tags.datadoghq.com/service: "meu-app"
-  tags.datadoghq.com/version: "1.5.0"
+  # tags.datadoghq.com/env: "dev"
+  # tags.datadoghq.com/service: "meu-app"
+  # tags.datadoghq.com/version: "1.5.0"
 spec:
   #replicas: 10
   selector:
@@ -18,7 +18,7 @@ spec:
         app: meu-app
         # tags.datadoghq.com/env: "dev"
         # tags.datadoghq.com/service: "meu-app"
-        # tags.datadoghq.com/version: "1.4.0"
+        # tags.datadoghq.com/version: "1.5.0"
         admission.datadoghq.com/enabled: "true"
       annotations:
         admission.datadoghq.com/enabled: "true"
