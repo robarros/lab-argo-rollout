@@ -6,7 +6,7 @@ metadata:
   namespace: app
   tags.datadoghq.com/env: "dev"
   tags.datadoghq.com/service: "meu-app"
-  tags.datadoghq.com/version: "1.3.0"
+  tags.datadoghq.com/version: "1.4.0"
 spec:
   #replicas: 10
   selector:
@@ -18,7 +18,7 @@ spec:
         app: meu-app
         tags.datadoghq.com/env: "dev"
         tags.datadoghq.com/service: "meu-app"
-        tags.datadoghq.com/version: "1.3.0"
+        tags.datadoghq.com/version: "1.4.0"
         admission.datadoghq.com/enabled: "true"
       annotations:
         admission.datadoghq.com/enabled: "true"
@@ -30,7 +30,7 @@ spec:
         image: robarros/simple-color-app:1.0.0
         env:
           - name: APP_COLOR
-            value: blue
+            value: green
           - name: ERROR_RATE
             value: '0'
           - name: DD_ENV
