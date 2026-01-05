@@ -1,0 +1,178 @@
+## ArgoCD Helm Values
+## Repositório: https://argoproj.github.io/argo-helm
+## Chart: argo-cd
+## Versão da imagem atual: v3.2.3
+
+global:
+  domain: argocd.virtualti.net
+
+## Configurações do Server
+server:
+  replicas: 1
+  
+  ## Modo inseguro (TLS terminado no ingress/load balancer)
+  extraArgs:
+    - --insecure
+  
+  ## Configurações de serviço
+  service:
+    type: ClusterIP
+    servicePortHttp: 80
+    servicePortHttps: 443
+
+  ## Configurações de Ingress (opcional - descomentrar se necessário)
+  # ingress:
+  #   enabled: true
+  #   ingressClassName: alb
+  #   annotations:
+  #     alb.ingress.kubernetes.io/scheme: internet-facing
+  #     alb.ingress.kubernetes.io/target-type: ip
+  #   hosts:
+  #     - argocd.virtualti.net
+  #   tls:
+  #     - hosts:
+  #         - argocd.virtualti.net
+  #       secretName: argocd-tls
+
+## Configurações do Dex para autenticação com Google
+dex:
+  enabled: true
+  image:
+    repository: ghcr.io/dexidp/dex
+    # tag: v2.43.0
+
+## Redis
+redis:
+  enabled: true
+  image:
+    repository: public.ecr.aws/docker/library/redis
+    # tag: 8.2.2-alpine
+
+## Configuração principal do ArgoCD (argocd-cm)
+configs:
+  cm:
+    ## URL do ArgoCD
+    url: https://argocd.virtualti.net
+    
+    ## Desabilitar conta admin
+    admin.enabled: "false"
+    accounts.admin.enabled: "false"
+    
+    ## Configuração do Dex com Google OAuth
+    dex.config: |
+      connectors:
+      - type: google
+        id: google
+        name: Google
+        config:
+          clientID: $argocd-dex-secret:clientID
+          clientSecret: $argocd-dex-secret:clientSecret
+          redirectURI: https://argocd.virtualti.net/api/dex/callback
+
+  ## Configuração de RBAC (argocd-rbac-cm)
+  rbac:
+    policy.default: role:readonly
+    scopes: '[email]'
+    policy.csv: |
+      p, role:admin, applications, *, */*, allow
+      p, role:admin, clusters, *, *, allow
+      p, role:admin, repositories, *, *, allow
+      p, role:admin, certificates, *, *, allow
+      p, role:admin, accounts, *, *, allow
+      p, role:admin, gpgkeys, *, *, allow
+      p, role:admin, logs, *, *, allow
+      p, role:admin, exec, *, */*, allow
+      p, role:admin, extensions, *, *, allow
+      g, robarros@gmail.com, role:admin
+
+  ## Parâmetros de comando (argocd-cmd-params-cm)
+  params:
+    server.insecure: true
+
+## Extensões do ArgoCD Server - Argo Rollouts Extension
+server:
+  extensions:
+    enabled: true
+    extensionList:
+      - name: argo-rollouts
+        env:
+          - name: EXTENSION_URL
+            value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.7/extension.tar
+
+## Configurações extras para o argocd-server
+## Para funcionar com a extensão rollouts
+extraObjects:
+  ## Secret para o Dex com as credenciais do Google OAuth
+  ## NOTA: Você deve criar este secret separadamente com os valores reais
+  ## ou manter o secret existente 'argocd-dex-secret'
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: argocd-dex-secret
+      namespace: argocd
+      labels:
+        app.kubernetes.io/part-of: argocd
+    type: Opaque
+    stringData:
+      # Substitua pelos valores reais ou use ExternalSecrets
+      clientID: "XXXXXXXXXXX"
+      clientSecret: "XXXXXXXXXXX"
+
+  ## Gateway do Istio para expor o ArgoCD externamente
+  - apiVersion: networking.istio.io/v1alpha3
+    kind: Gateway
+    metadata:
+      name: argocd-gateway
+      namespace: argocd
+      labels:
+        app.kubernetes.io/part-of: argocd
+    spec:
+      selector:
+        istio: ingressgateway
+      servers:
+        - hosts:
+            - argocd.virtualti.net
+          port:
+            name: http
+            number: 80
+            protocol: HTTP
+        - hosts:
+            - argocd.virtualti.net
+          port:
+            name: https
+            number: 443
+            protocol: HTTP
+
+  ## VirtualService do Istio para rotear tráfego para o ArgoCD
+  - apiVersion: networking.istio.io/v1alpha3
+    kind: VirtualService
+    metadata:
+      name: argocd-vs
+      namespace: argocd
+      labels:
+        app.kubernetes.io/part-of: argocd
+    spec:
+      hosts:
+        - argocd.virtualti.net
+      gateways:
+        - argocd-gateway
+      http:
+        - match:
+            - uri:
+                prefix: /
+          route:
+            - destination:
+                host: argocd-server
+                port:
+                  number: 80
+
+
+# # Adicionar o repositório
+# helm repo add argo https://argoproj.github.io/argo-helm
+# helm repo update
+
+# # Instalar ou atualizar
+# helm upgrade --install argocd argo/argo-cd \
+#   --namespace argocd \
+#   --create-namespace \
+#   -f argocd-values.yaml
